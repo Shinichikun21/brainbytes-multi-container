@@ -37,17 +37,9 @@ Development Environment Setup Verification
 
 ## Docker Version Information
 
+System's Architecture
 
-
-
-Your diagram should be slightly more detailed and include:
-Container names
-Port mappings
-Data flows
-Any additional services (like the AI model integration)
-
-
-
+![architecture (1)](https://github.com/user-attachments/assets/c94ad0c1-49f7-4050-af37-b028ff57b3b3)
 
 Task Distribution Plan
 
@@ -59,6 +51,7 @@ Week 1: Container Basics
 
 Week 2: Platform Development
 **[Team Member Name]**: Implement frontend container (Next.js)
+
 
 
 Week 3: Platform Development (continued)
