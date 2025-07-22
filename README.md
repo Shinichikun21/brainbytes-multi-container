@@ -53,12 +53,12 @@ Week 1: Container Basics
 Week 2: Platform Development
 **[Team Member Name]**: Implement frontend container (Next.js)
 
-MS1 video: https://drive.google.com/file/d/13ZjIUJ6oQBPHz5fb6KB5Y6RJmw2m0y07/view?usp=sharing
-
 
 Week 3: Platform Development (continued)
 **[Team Member Name]**: Implement chat interface frontend
 
 Week 4: Integration and Testing
 **All Team Members**: Final testing and preparation for submission
+
+MS1 video: https://drive.google.com/file/d/13ZjIUJ6oQBPHz5fb6KB5Y6RJmw2m0y07/view?usp=sharing
 
