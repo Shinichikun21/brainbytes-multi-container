@@ -41,6 +41,7 @@ System's Architecture
 
 ![architecture (1)](https://github.com/user-attachments/assets/c94ad0c1-49f7-4050-af37-b028ff57b3b3)
 
+
 Task Distribution Plan
 
 
@@ -52,6 +53,7 @@ Week 1: Container Basics
 Week 2: Platform Development
 **[Team Member Name]**: Implement frontend container (Next.js)
 
+MS1 video: https://drive.google.com/file/d/13ZjIUJ6oQBPHz5fb6KB5Y6RJmw2m0y07/view?usp=sharing
 
 
 Week 3: Platform Development (continued)
