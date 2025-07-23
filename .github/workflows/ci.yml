@@ -2,47 +2,31 @@ name: BrainBytes CI
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, development ]
+    branches: [ main ]
 
 jobs:
-  test:
-    name: Run Tests
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      # --- FRONTEND ---
-      - name: Set up Node.js for Frontend
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          cache: 'npm'
-          cache-dependency-path: ./frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm install
+    - uses: actions/checkout@v3
+    
+    # Setup Node.js with proper caching
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        cache: 'npm'  # This enables automatic npm caching
+    
+    # Install dependencies
+    - name: Install dependencies
+      run: npm ci
       
-      - name: Run frontend tests
-        working-directory: ./frontend
-        run: npm test
-
-      # --- BACKEND ---
-      - name: Set up Node.js for Backend
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          cache: 'npm'
-          cache-dependency-path: ./backend/package-lock.json
-
-      - name: Install backend dependencies
-        working-directory: ./backend
-        run: npm install
-
-      - name: Run backend tests
-        working-directory: ./backend
-        run: npm test
+    # Build the project
+    - name: Build
+      run: npm run build
+      
+    # Run tests
+    - name: Test
+      run: npm test
