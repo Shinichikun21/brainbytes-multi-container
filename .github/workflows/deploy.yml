@@ -1,12 +1,9 @@
-# .github/workflows/deploy.yml
 name: BrainBytes Deploy
-
 
 on:
   push:
     branches: [main, development]
   workflow_dispatch:
-
 
 jobs:
   deploy:
@@ -16,28 +13,48 @@ jobs:
     
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v4  # Updated to v4
+
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4  # Updated to v4
         with:
-          node-version: '16'
-      
-      - name: Build Docker images
-        run: docker-compose build
-      
+          node-version: '20'  # Updated to supported LTS version
+          cache: 'npm'  # Added npm caching
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f docker-compose.yml build
+          docker-compose -f docker-compose.yml push
+
       - name: Prepare deployment
         run: |
-          echo "DEPLOY_TIME=$(date)" >> $GITHUB_ENV
-          echo "DEPLOY_SHA=${{ github.sha }}" >> $GITHUB_ENV
-      
-      - name: Deploy to test environment
+          echo "DEPLOY_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "DEPLOY_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Deploy to Oracle Cloud
+        env:
+          OCI_SSH_KEY: ${{ secrets.OCI_SSH_KEY }}
+          OCI_SSH_USER: ${{ secrets.OCI_SSH_USER }}
+          OCI_SSH_HOST: ${{ secrets.OCI_SSH_HOST }}
         run: |
-          echo "Deploying to test environment..."
-          echo "This is a placeholder for your actual deployment script"
-          echo "In future weeks, this will deploy to Oracle Cloud"
-      
+          echo "Deploying to Oracle Cloud..."
+          ssh -o StrictHostKeyChecking=no $OCI_SSH_USER@$OCI_SSH_HOST << EOF
+            cd /opt/brainbytes
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+          EOF
+
       - name: Verify deployment
         run: |
           echo "Verifying deployment..."
-          curl -s http://localhost:3000/health || echo "Service not available yet"
+          sleep 30  # Wait for containers to start
+          curl --retry 5 --retry-delay 10 --max-time 5 \
+            http://${{ secrets.OCI_SSH_HOST }}:3000/health || \
+            (echo "Health check failed" && exit 1)
