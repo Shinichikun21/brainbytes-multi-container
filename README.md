@@ -46,17 +46,5 @@ Task Distribution Plan
 
 # Milestone 1 Task Distribution
 
-Week 1: Container Basics
-**[Team Member Name]**: Set up project repository and basic documentation
-
-Week 2: Platform Development
-**[Team Member Name]**: Implement frontend container (Next.js)
-
-
-
-Week 3: Platform Development (continued)
-**[Team Member Name]**: Implement chat interface frontend
-
-Week 4: Integration and Testing
-**All Team Members**: Final testing and preparation for submission
-
+Documentation link: https://docs.google.com/document/d/19JZXD7akBIiNR0gcDX62CnhNqLkfwhyn_RZiy7V-t2s/edit?usp=sharing 
+Video Link: https://drive.google.com/file/d/13ZjIUJ6oQBPHz5fb6KB5Y6RJmw2m0y07/view?usp=sharing 
