@@ -2,41 +2,53 @@ name: BrainBytes Lint
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [main, development]
   pull_request:
-    branches: [ main, development ]
+    branches: [main, development]
 
 jobs:
   lint:
     name: Code Quality Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v4  # Updated to v4
+
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4  # Updated to v4
         with:
-          node-version: '16'
+          node-version: '20'  # Updated to LTS version
           cache: 'npm'
-      
+
       # Frontend linting
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci
-      
-      - name: Lint frontend code
+        run: npm ci --prefer-offline
+
+      - name: Run frontend linting
         working-directory: ./frontend
-        run: |
-          npm run lint || echo "Frontend linting failed but continuing workflow"
-      
-      # Backend linting
+        run: npm run lint
+        continue-on-error: false  # Fail workflow on lint errors
+
+      # Backend linting  
       - name: Install backend dependencies
         working-directory: ./backend
-        run: npm ci
-      
-      - name: Lint backend code
+        run: npm ci --prefer-offline
+
+      - name: Run backend linting
         working-directory: ./backend
-        run: |
-          npm run lint || echo "Backend linting failed but continuing workflow"
+        run: npm run lint
+        continue-on-error: false
+
+      # Optional: Upload lint results as artifact
+      - name: Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-results
+          path: |
+            ./frontend/lint-results.*
+            ./backend/lint-results.*
+          retention-days: 1
