@@ -13,7 +13,7 @@ const messageSchema = new Schema(
     sessionId: {
       type: String,
       required: true,
-      default: () => uuidv4(), 
+      default: () => uuidv4(), // Auto-generate if not provided
       index: true
     },
     text: { 

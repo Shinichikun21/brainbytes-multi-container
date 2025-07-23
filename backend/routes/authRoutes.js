@@ -10,7 +10,6 @@ const {
   getMe,
   forgotPassword,
   resetPassword,
-  updateUserProfile
 } = require('../controllers/userController');
 
 

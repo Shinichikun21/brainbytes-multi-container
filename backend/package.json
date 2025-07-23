@@ -4,7 +4,9 @@
   "description": "Backend API for BrainBytes",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest",
+    "test-watch": "jest --watch"
   },
   "dependencies": {
     "axios": "^1.7.2",

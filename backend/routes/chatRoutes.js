@@ -4,7 +4,6 @@ const { check } = require('express-validator');
 const auth = require('../middleware/auth');
 const chatController = require('../controllers/chatController');
 
-
 router.post(
   '/send',
   [

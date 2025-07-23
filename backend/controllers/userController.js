@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const UserService = require('../services/UserService');
+const UserService = require('../services/userService');
 const User = require('../models/User'); // Still needed for getMe and updateUserProfile
 
 // --- Core Auth ---
