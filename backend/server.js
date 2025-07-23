@@ -1,73 +1,45 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const aiService = require('./aiService');
-const chatRoutes = require('./routes/chatRoutes');
+const aiService = require('./services/aiService');
 
+const userRouter = require('./routes/userRoutes');
+const chatRouter = require('./routes/chatRoutes');
+const sessionRouter = require('./routes/sessions');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
+const dbURI = process.env.MONGO_URI;
 
-// Middleware
-app.use(cors());
+
+// --- Middleware ---
+
+app.use(cors({
+  origin: 'http://localhost:8080', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'x-auth-token'] 
+}));
 app.use(express.json());
 
-// Initialize AI model
-aiService.initializeAI();
+// Initialize Services
+if (aiService && aiService.initializeAI) {
+    aiService.initializeAI();
+}
 
-// API Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the BrainBytes API' });
-});
 
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+app.use('/api/users', userRouter);
+app.use('/api/chat', chatRouter);
+app.use('/api/sessions', sessionRouter); 
 
-// Chat routes
-app.use('/api/chat', chatRoutes);
 
-// Legacy endpoint for backward compatibility
-app.post('/api/messages', async (req, res) => {
-  try {
-    // Save user message
-    const userMessage = new Message({
-      text: req.body.text,
-      sender: 'user',
-      sessionId: 'legacy',
-      timestamp: new Date()
-    });
-    await userMessage.save();
 
-    // Generate AI response
-    const aiResult = await aiService.generateResponse(req.body.text);
+if (!dbURI) {
+  console.error('FATAL ERROR: MONGO_URI is not defined. Shutting down.');
+  process.exit(1);
+}
 
-    // Save AI response
-    const aiMessage = new Message({
-      text: aiResult.response,
-      sender: 'ai',
-      sessionId: 'legacy',
-      timestamp: new Date()
-    });
-    await aiMessage.save();
-
-    // Return both messages
-    res.status(201).json({
-      userMessage,
-      aiMessage,
-      category: aiResult.category
-    });
-  } catch (err) {
-    console.error('Error in /api/messages route:', err);
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Connect to MongoDB
-mongoose.connect('mongodb://mongo:27017/brainbytes', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  retryWrites: true
+mongoose.connect(dbURI, {
+  retryWrites: true 
 }).then(() => {
   console.log('Connected to MongoDB');
   app.listen(PORT, () => {
@@ -75,4 +47,5 @@ mongoose.connect('mongodb://mongo:27017/brainbytes', {
   });
 }).catch(err => {
   console.error('Failed to connect to MongoDB:', err);
+  process.exit(1);
 });
