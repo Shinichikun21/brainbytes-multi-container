@@ -30,7 +30,7 @@ services:
       - PORT=5000
       - MONGO_URI=mongodb://mongo:27017/brainbytes
       - JWT_SECRET=xWaxbtieWMd6BXtarZjnElklb1bnM9LMlDpzG1aFLAo=
-      - HUGGINGFACE_TOKEN=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
+      - HUGGINGFACE_TOKEN='your token'
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
