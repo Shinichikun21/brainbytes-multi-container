@@ -41,7 +41,6 @@ System's Architecture
 
 ![architecture (1)](https://github.com/user-attachments/assets/c94ad0c1-49f7-4050-af37-b028ff57b3b3)
 
-
 Task Distribution Plan
 
 
@@ -54,11 +53,10 @@ Week 2: Platform Development
 **[Team Member Name]**: Implement frontend container (Next.js)
 
 
+
 Week 3: Platform Development (continued)
 **[Team Member Name]**: Implement chat interface frontend
 
 Week 4: Integration and Testing
 **All Team Members**: Final testing and preparation for submission
-
-MS1 video: https://drive.google.com/file/d/13ZjIUJ6oQBPHz5fb6KB5Y6RJmw2m0y07/view?usp=sharing
 
