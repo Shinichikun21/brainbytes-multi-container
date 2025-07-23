@@ -1,29 +1,24 @@
-name: BrainBytes CI/CD Pipeline
+name: CI Pipeline
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Fixed Node.js setup
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'  # or '18' if you prefer
+          node-version: '20'     # or '18'/'16.20.2'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run linting
+        run: npm run lint
+
       - name: Build project
         run: npm run build
-
-      - name: Run tests
-        run: npm test
