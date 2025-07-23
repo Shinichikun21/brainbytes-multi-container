@@ -6,12 +6,9 @@ README.md Template
 
 # BrainBytes AI Tutoring Platform
 
-[!Cl
-Status](https://github.com/Shinichikun21/brainbytes/actions/workflows/ci.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes/actions/workflows/ci.yml)
-[!Docker Build
-Status](https://github.com/Shinichikun21/brainbytes/actions/workflows/build.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes/actions/workflows/build.yml)
-[![BrainBytes
-CI/CD](https://github.com/Shinichikun21/brainbytes/actions/workflow/main.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes/actions/workflows/main.yml)
+[![CI Status](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/ci.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/ci.yml)
+[![Docker Build Status](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/build.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/build.yml)
+[![BrainBytes CI/CD](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/main.yml/badge.svg)](https://github.com/Shinichikun21/brainbytes-multi-container/actions/workflows/main.yml)
 
 
 
