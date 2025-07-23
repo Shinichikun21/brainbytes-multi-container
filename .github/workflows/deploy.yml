@@ -5,56 +5,45 @@ on:
     branches: [main, development]
   workflow_dispatch:
 
-jobs:
+# Add to the existing workflow
   deploy:
-    name: Deploy to Test Environment
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: test
-    
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4  # Updated to v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4  # Updated to v4
-        with:
-          node-version: '20'  # Updated to supported LTS version
-          cache: 'npm'  # Added npm caching
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: Build and push Docker images
+      - uses: actions/checkout@v2
+      
+      - name: Install OCI CLI
         run: |
-          docker-compose -f docker-compose.yml build
-          docker-compose -f docker-compose.yml push
-
-      - name: Prepare deployment
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "$HOME/lib/oracle-cli/bin" >> $GITHUB_PATH
+      
+      - name: Configure OCI CLI
         run: |
-          echo "DEPLOY_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-          echo "DEPLOY_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
-      - name: Deploy to Oracle Cloud
-        env:
-          OCI_SSH_KEY: ${{ secrets.OCI_SSH_KEY }}
-          OCI_SSH_USER: ${{ secrets.OCI_SSH_USER }}
-          OCI_SSH_HOST: ${{ secrets.OCI_SSH_HOST }}
-        run: |
-          echo "Deploying to Oracle Cloud..."
-          ssh -o StrictHostKeyChecking=no $OCI_SSH_USER@$OCI_SSH_HOST << EOF
-            cd /opt/brainbytes
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+          
+          cat > ~/.oci/config << EOF
+          [DEFAULT]
+          user=${{ secrets.OCI_USER }}
+          fingerprint=${{ secrets.OCI_FINGERPRINT }}
+          tenancy=${{ secrets.OCI_TENANCY }}
+          region=${{ secrets.OCI_REGION }}
+          key_file=~/.oci/oci_api_key.pem
           EOF
-
-      - name: Verify deployment
+      
+      - name: Set up SSH
         run: |
-          echo "Verifying deployment..."
-          sleep 30  # Wait for containers to start
-          curl --retry 5 --retry-delay 10 --max-time 5 \
-            http://${{ secrets.OCI_SSH_HOST }}:3000/health || \
-            (echo "Health check failed" && exit 1)
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan $(oci compute instance get --instance-id ${{ secrets.INSTANCE_OCID }} | jq -r '.data."public-ip"') >> ~/.ssh/known_hosts
+      
+      - name: Deploy to Oracle Cloud
+        run: |
+          INSTANCE_IP=$(oci compute instance get --instance-id ${{ secrets.INSTANCE_OCID }} | jq -r '.data."public-ip"')
+          ssh opc@$INSTANCE_IP "cd ~/brainbytes && git pull && docker-compose down && docker-compose build && docker-compose up -d"
+
