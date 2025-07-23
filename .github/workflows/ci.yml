@@ -10,23 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
-    # Setup Node.js with proper caching
+    # Setup Node.js with supported version
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
-        cache: 'npm'  # This enables automatic npm caching
+        node-version: '20'  # Using LTS version (18.x or 20.x both work)
+        cache: 'npm'
     
-    # Install dependencies
     - name: Install dependencies
       run: npm ci
       
-    # Build the project
     - name: Build
       run: npm run build
       
-    # Run tests
     - name: Test
       run: npm test
