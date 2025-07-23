@@ -1,54 +1,39 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '../context/authContext'; // Corrected: Filename is PascalCase
 import Head from 'next/head';
-import Chat from '../components/Chat';
 
+const IndexPage = () => {
+  // --- 1. Get the auth state and the router ---
+  const { isAuthenticated, loading } = useAuth();
+  const router = useRouter();
 
-
-
-export default function Home() {
-  const [messages, setMessages] = useState([]);
-  const [] = useState('');
-  const [, setLoading] = useState(true);
-  const [] = useState(false);
-  const messageEndRef = useRef(null);
-
-  // Fetch messages from the API
-  const fetchMessages = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/api/messages');
-      setMessages(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      setLoading(false);
+  // --- 2. The Redirection Logic ---
+  useEffect(() => {
+    // Wait until the authentication check is complete before redirecting.
+    if (loading) {
+      return;
     }
-  };
 
-  // Submit a new message
+    // `router.replace` is used to avoid adding this page to the browser's history.
+    if (isAuthenticated) {
+      router.replace('/chat');
+    } else {
+      router.replace('/login');
+    }
+  }, [loading, isAuthenticated, router]);
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // Load messages on component mount
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
+ 
   return (
-    <>
-
-      <Head >
-        <title>BrainBytes AI Tutor</title>
-<meta name="description" content="AI-powered tutoring platform" />
-        <link rel="icon" href="/favicon.ico" />
+    <div>
+      <Head>
+        <title>Redirecting...</title>
       </Head>
-       <main>
-        <Chat />
-      </main>
-    </>
-     
+      <div className="loading-container">
+        <p>Redirecting...</p>
+      </div>
+    </div>
   );
-}
+};
+
+export default IndexPage;
